@@ -1,4 +1,17 @@
-import { ADD_TO_CART, GET_NUMBERS_BASKET, INCREASE_QUANTITY, DECREASE_QUANTITY, CLEAR_PRODUCT } from '../actions/types';
+import {
+    ADD_TO_CART,
+    GET_NUMBERS_BASKET,
+    INCREASE_QUANTITY,
+    DECREASE_QUANTITY,
+    CLEAR_PRODUCT,
+    LOAD_PRODUCTS,
+    LOAD_PRODUCTS_SUCCESS,
+    LOAD_PRODUCTS_FAILURE,
+    LOAD_CART,
+    LOAD_CART_SUCCESS,
+    LOAD_CART_FAILURE,
+    CLEAR_CART
+} from '../actions/types';
 
 const initialState = {
     cart: 0,
@@ -32,7 +45,11 @@ const initialState = {
             numbers: 0,
             inCart: false
         }
-    }
+    },
+    productsFromDB: [],
+    cartItems: [],
+    loading: false,
+    error: null
 }
 
 export default (state = initialState, action) => {
@@ -107,6 +124,64 @@ export default (state = initialState, action) => {
                     ...state.products,
                     [action.payload]: productSelected
                 }
+            }
+
+        case LOAD_PRODUCTS:
+            return {
+                ...state,
+                loading: true,
+                error: null
+            }
+
+        case LOAD_PRODUCTS_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                productsFromDB: action.payload,
+                error: null
+            }
+
+        case LOAD_PRODUCTS_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            }
+
+        case LOAD_CART:
+            return {
+                ...state,
+                loading: true
+            }
+
+        case LOAD_CART_SUCCESS:
+            const cartItems = action.payload || [];
+            const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cartItems.reduce((sum, item) => {
+                return sum + (item.product.price * item.quantity);
+            }, 0);
+
+            return {
+                ...state,
+                loading: false,
+                cartItems: cartItems,
+                cart: totalItems,
+                cartPrice: totalPrice
+            }
+
+        case LOAD_CART_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            }
+
+        case CLEAR_CART:
+            return {
+                ...state,
+                cartItems: [],
+                cart: 0,
+                cartPrice: 0
             }
 
         default:
