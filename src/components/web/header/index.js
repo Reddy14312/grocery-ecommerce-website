@@ -13,18 +13,28 @@ class Header extends Component {
         super(props);
         this.state = {
             width: window.innerWidth,
-            anchorEl: null
+            anchorEl: null,
+            scrolled: false
         }
     }
     componentWillMount() {
         window.addEventListener('resize', this.handleWindowSizeChange);
+        window.addEventListener('scroll', this.handleScroll);
     }
     componentWillUnmount() {
         window.removeEventListener('resize', this.handleWindowSizeChange);
+        window.removeEventListener('scroll', this.handleScroll);
     }
 
     handleWindowSizeChange = () => {
         this.setState({ width: window.innerWidth });
+    };
+
+    handleScroll = () => {
+        const scrolled = window.scrollY > 20;
+        if (scrolled !== this.state.scrolled) {
+            this.setState({ scrolled });
+        }
     };
 
     handleMenuOpen = (event) => {
@@ -53,7 +63,7 @@ class Header extends Component {
             return (
                 <div>
                     {/* <Link to="#"><img src="images/download.png" className="img-head" alt="download" /></Link> */}
-                    <Grid container className="header_info">
+                    <Grid container className={`header_info ${this.state.scrolled ? 'scrolled' : ''}`}>
                         <Grid item lg={1} xl={2}></Grid>
                         <Grid item md={12} lg={11} xl={10} className="header_fixed">
                             <Grid container>
