@@ -1,38 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
-import './login.css';
+import './reset-password.css';
 
-export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+export default function ResetPassword() {
+    const [formData, setFormData] = useState({
+        password: '',
+        confirmPassword: ''
+    });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
 
-    const { signIn, isAuthenticated } = useAuth();
+    const { updatePassword } = useAuth();
     const history = useHistory();
-    const location = useLocation();
-
-    const from = location.state?.from?.pathname || '/';
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            history.replace(from);
-        }
-    }, [isAuthenticated, history, from]);
 
     const validateForm = () => {
-        if (!email.trim()) {
-            setError('Email is required');
-            return false;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            setError('Please enter a valid email address');
-            return false;
-        }
+        const { password, confirmPassword } = formData;
 
         if (!password) {
             setError('Password is required');
@@ -41,6 +25,11 @@ export default function Login() {
 
         if (password.length < 6) {
             setError('Password must be at least 6 characters');
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
             return false;
         }
 
@@ -59,37 +48,30 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const { error: signInError } = await signIn(email, password);
+            const { error: updateError } = await updatePassword(formData.password);
 
-            if (signInError) {
-                if (signInError.message.includes('Invalid login credentials')) {
-                    setError('Invalid email or password');
-                } else if (signInError.message.includes('Email not confirmed')) {
-                    setError('Please verify your email address before logging in');
-                } else {
-                    setError(signInError.message);
-                }
+            if (updateError) {
+                setError(updateError.message);
             } else {
-                setMessage('Login successful! Redirecting...');
+                setMessage('Password updated successfully! Redirecting to login...');
                 setTimeout(() => {
-                    history.replace(from);
-                }, 1000);
+                    history.push('/login');
+                }, 2000);
             }
         } catch (err) {
             setError('An unexpected error occurred. Please try again.');
-            console.error('Login error:', err);
+            console.error('Password update error:', err);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-        setError('');
-    };
-
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
         setError('');
     };
 
@@ -97,8 +79,8 @@ export default function Login() {
         <div>
             <div className="banner-top">
                 <div className="container">
-                    <h3>Login</h3>
-                    <h4><Link to="/">Home</Link><label>/</label>Login</h4>
+                    <h3>Reset Password</h3>
+                    <h4><Link to="/">Home</Link><label>/</label>Reset Password</h4>
                     <div className="clearfix"></div>
                 </div>
             </div>
@@ -106,7 +88,10 @@ export default function Login() {
             <div className="login">
                 <div className="main-agileits">
                     <div className="form-w3agile">
-                        <h3>Login</h3>
+                        <h3>Create New Password</h3>
+                        <p className="reset-description">
+                            Please enter your new password below.
+                        </p>
 
                         {error && (
                             <div className="alert alert-danger" role="alert">
@@ -122,13 +107,13 @@ export default function Login() {
 
                         <form onSubmit={handleSubmit}>
                             <div className="key">
-                                <i className="fa fa-envelope" aria-hidden="true" />
+                                <i className="fa fa-lock" aria-hidden="true" />
                                 <input
-                                    type="email"
-                                    placeholder="Email"
-                                    name="email"
-                                    value={email}
-                                    onChange={handleEmailChange}
+                                    type="password"
+                                    placeholder="New Password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     disabled={loading}
                                     required
                                 />
@@ -139,10 +124,10 @@ export default function Login() {
                                 <i className="fa fa-lock" aria-hidden="true" />
                                 <input
                                     type="password"
-                                    placeholder="Password"
-                                    name="password"
-                                    value={password}
-                                    onChange={handlePasswordChange}
+                                    placeholder="Confirm New Password"
+                                    name="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
                                     disabled={loading}
                                     required
                                 />
@@ -151,16 +136,10 @@ export default function Login() {
 
                             <input
                                 type="submit"
-                                value={loading ? "Logging in..." : "Login"}
+                                value={loading ? "Updating..." : "Update Password"}
                                 disabled={loading}
                             />
                         </form>
-                    </div>
-
-                    <div className="forg">
-                        <Link to="/forgot-password" className="forg-left">Forgot Password</Link>
-                        <Link to="/register" className="forg-right">Register</Link>
-                        <div className="clearfix" />
                     </div>
                 </div>
             </div>

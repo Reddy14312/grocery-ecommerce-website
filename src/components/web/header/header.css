@@ -1,0 +1,24 @@
+.user-menu-btn {
+    text-transform: none !important;
+}
+
+.user-menu-btn span {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-menu .MuiMenuItem-root {
+    padding: 10px 20px;
+    min-width: 180px;
+}
+
+.user-menu .MuiMenuItem-root i {
+    margin-right: 10px;
+    width: 16px;
+}
+
+.user-menu .MuiMenuItem-root:hover {
+    background-color: #f5f5f5;
+}

@@ -1,0 +1,29 @@
+.alert {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.form-w3agile input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-w3agile input[type="submit"]:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

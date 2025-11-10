@@ -1,14 +1,19 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom';
-import { Grid, Button } from '@material-ui/core';
+import { Grid, Button, Menu, MenuItem } from '@material-ui/core';
 import Mobileheader from '../header/mobile-header';
 import { connect } from 'react-redux';
 import { getCartNumbers } from '../../../actions/productActions';
+import { AuthContext } from '../../../contexts/AuthContext';
+import './header.css';
 class Header extends Component {
+    static contextType = AuthContext;
+
     constructor(props) {
         super(props);
         this.state = {
             width: window.innerWidth,
+            anchorEl: null
         }
     }
     componentWillMount() {
@@ -20,6 +25,20 @@ class Header extends Component {
 
     handleWindowSizeChange = () => {
         this.setState({ width: window.innerWidth });
+    };
+
+    handleMenuOpen = (event) => {
+        this.setState({ anchorEl: event.currentTarget });
+    };
+
+    handleMenuClose = () => {
+        this.setState({ anchorEl: null });
+    };
+
+    handleLogout = async () => {
+        const { signOut } = this.context;
+        this.handleMenuClose();
+        await signOut();
     };
     render() {
         const { width } = this.state;
@@ -53,11 +72,42 @@ class Header extends Component {
                                 </Grid>
                                 <Grid item md={3} lg={3} xl={4}>
                                     <Grid container className="bk_cart_sd">
-                                        <Grid item md={6} lg={6} xl={6} className="btn_login">
-                                        <Link to={"/login"}>
-                                            <Button className="login" variant="outlined"><span>Login</span></Button>
-                                        </Link>
-                                        </Grid>
+                                        {this.context.isAuthenticated ? (
+                                            <>
+                                                <Grid item md={6} lg={6} xl={6} className="btn_login">
+                                                    <Button
+                                                        className="login user-menu-btn"
+                                                        variant="outlined"
+                                                        onClick={this.handleMenuOpen}
+                                                    >
+                                                        <i className="fa fa-user" aria-hidden="true" />
+                                                        <span>{this.context.user?.user_metadata?.name || 'Account'}</span>
+                                                        <i className="fa fa-caret-down" aria-hidden="true" style={{marginLeft: '5px'}} />
+                                                    </Button>
+                                                    <Menu
+                                                        anchorEl={this.state.anchorEl}
+                                                        open={Boolean(this.state.anchorEl)}
+                                                        onClose={this.handleMenuClose}
+                                                        className="user-menu"
+                                                    >
+                                                        <MenuItem onClick={this.handleMenuClose}>
+                                                            <Link to="/profile" style={{color: 'inherit', textDecoration: 'none'}}>
+                                                                <i className="fa fa-user" aria-hidden="true" /> My Profile
+                                                            </Link>
+                                                        </MenuItem>
+                                                        <MenuItem onClick={this.handleLogout}>
+                                                            <i className="fa fa-sign-out" aria-hidden="true" /> Logout
+                                                        </MenuItem>
+                                                    </Menu>
+                                                </Grid>
+                                            </>
+                                        ) : (
+                                            <Grid item md={6} lg={6} xl={6} className="btn_login">
+                                                <Link to={"/login"}>
+                                                    <Button className="login" variant="outlined"><span>Login</span></Button>
+                                                </Link>
+                                            </Grid>
+                                        )}
                                         <Grid item md={6} lg={6} xl={6} className="cart">
                                             <Link to="/carts">
                                                 <Button className="cart_item" variant="outlined">

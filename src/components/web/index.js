@@ -14,10 +14,16 @@ import Desclaimer from './customer/desclaimer';
 import Privacypolicy from './customer/privacy-policy';
 import Login from '../auth/login';
 import Register from '../auth/register';
+import ForgotPassword from '../auth/forgot-password';
+import ResetPassword from '../auth/reset-password';
 import Category from './category-mobile'
 import Cart from './cart';
 import Checkout from './checkout';
 import Singleproduct from './singleproduct';
+import Profile from './profile';
+import ChangePassword from './change-password';
+import ProtectedRoute from '../common/ProtectedRoute';
+
 export default class Main extends Component {
   render() {
       return (
@@ -37,9 +43,13 @@ export default class Main extends Component {
               <Route path='/privacy-and-policy' component={Privacypolicy} />
               <Route path='/login' component={Login} />
               <Route path='/register' component={Register} />
+              <Route path='/forgot-password' component={ForgotPassword} />
+              <Route path='/reset-password' component={ResetPassword} />
               <Route path='/categories' component={Category} />
               <Route path='/carts' component={Cart} />
-              <Route path='/checkout' component={Checkout} />
+              <ProtectedRoute path='/checkout' component={Checkout} />
+              <ProtectedRoute path='/profile' component={Profile} />
+              <ProtectedRoute path='/change-password' component={ChangePassword} />
               <Route component={NotFound} />
             </Switch>
             <Footer />

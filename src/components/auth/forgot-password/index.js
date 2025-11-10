@@ -1,26 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
-import './login.css';
+import './forgot-password.css';
 
-export default function Login() {
+export default function ForgotPassword() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
 
-    const { signIn, isAuthenticated } = useAuth();
-    const history = useHistory();
-    const location = useLocation();
-
-    const from = location.state?.from?.pathname || '/';
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            history.replace(from);
-        }
-    }, [isAuthenticated, history, from]);
+    const { resetPassword } = useAuth();
 
     const validateForm = () => {
         if (!email.trim()) {
@@ -31,16 +20,6 @@ export default function Login() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             setError('Please enter a valid email address');
-            return false;
-        }
-
-        if (!password) {
-            setError('Password is required');
-            return false;
-        }
-
-        if (password.length < 6) {
-            setError('Password must be at least 6 characters');
             return false;
         }
 
@@ -59,25 +38,17 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const { error: signInError } = await signIn(email, password);
+            const { error: resetError } = await resetPassword(email);
 
-            if (signInError) {
-                if (signInError.message.includes('Invalid login credentials')) {
-                    setError('Invalid email or password');
-                } else if (signInError.message.includes('Email not confirmed')) {
-                    setError('Please verify your email address before logging in');
-                } else {
-                    setError(signInError.message);
-                }
+            if (resetError) {
+                setError(resetError.message);
             } else {
-                setMessage('Login successful! Redirecting...');
-                setTimeout(() => {
-                    history.replace(from);
-                }, 1000);
+                setMessage('Password reset link has been sent to your email. Please check your inbox.');
+                setEmail('');
             }
         } catch (err) {
             setError('An unexpected error occurred. Please try again.');
-            console.error('Login error:', err);
+            console.error('Password reset error:', err);
         } finally {
             setLoading(false);
         }
@@ -88,17 +59,12 @@ export default function Login() {
         setError('');
     };
 
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-        setError('');
-    };
-
     return (
         <div>
             <div className="banner-top">
                 <div className="container">
-                    <h3>Login</h3>
-                    <h4><Link to="/">Home</Link><label>/</label>Login</h4>
+                    <h3>Forgot Password</h3>
+                    <h4><Link to="/">Home</Link><label>/</label>Forgot Password</h4>
                     <div className="clearfix"></div>
                 </div>
             </div>
@@ -106,7 +72,10 @@ export default function Login() {
             <div className="login">
                 <div className="main-agileits">
                     <div className="form-w3agile">
-                        <h3>Login</h3>
+                        <h3>Reset Password</h3>
+                        <p className="reset-description">
+                            Enter your email address and we'll send you a link to reset your password.
+                        </p>
 
                         {error && (
                             <div className="alert alert-danger" role="alert">
@@ -135,32 +104,18 @@ export default function Login() {
                                 <div className="clearfix" />
                             </div>
 
-                            <div className="key">
-                                <i className="fa fa-lock" aria-hidden="true" />
-                                <input
-                                    type="password"
-                                    placeholder="Password"
-                                    name="password"
-                                    value={password}
-                                    onChange={handlePasswordChange}
-                                    disabled={loading}
-                                    required
-                                />
-                                <div className="clearfix" />
-                            </div>
-
                             <input
                                 type="submit"
-                                value={loading ? "Logging in..." : "Login"}
+                                value={loading ? "Sending..." : "Send Reset Link"}
                                 disabled={loading}
                             />
                         </form>
-                    </div>
 
-                    <div className="forg">
-                        <Link to="/forgot-password" className="forg-left">Forgot Password</Link>
-                        <Link to="/register" className="forg-right">Register</Link>
-                        <div className="clearfix" />
+                        <div className="forg">
+                            <Link to="/login" className="forg-left">Back to Login</Link>
+                            <Link to="/register" className="forg-right">Register</Link>
+                            <div className="clearfix" />
+                        </div>
                     </div>
                 </div>
             </div>
