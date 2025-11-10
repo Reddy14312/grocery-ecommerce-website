@@ -7,6 +7,7 @@ import NotFound from '../nomatch'
 import Kitchen from './kitchen';
 import Care from './personalcare';
 import Household from './household';
+import CategoryPage from './category';
 import Contact from './contact';
 import Faq from './customer/faq';
 import Term from './customer/term';
@@ -20,6 +21,8 @@ import Category from './category-mobile'
 import Cart from './cart';
 import Checkout from './checkout';
 import Singleproduct from './singleproduct';
+import ProductDetail from './product-detail';
+import SearchResults from './search-results';
 import Profile from './profile';
 import ChangePassword from './change-password';
 import ProtectedRoute from '../common/ProtectedRoute';
@@ -32,6 +35,9 @@ export default class Main extends Component {
             <Header />
             <Switch>
               <Route exact path='/' component={Home} />
+              <Route path='/search' component={SearchResults} />
+              <Route path='/product/:slug' component={ProductDetail} />
+              <Route path='/category/:slug' component={CategoryPage} />
               <Route path='/kitchen' component={Kitchen} />
               <Route path="/product-details" component={Singleproduct} />
               <Route path='/care' component={Care} />

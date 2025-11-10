@@ -13,7 +13,8 @@ class Header extends Component {
         super(props);
         this.state = {
             width: window.innerWidth,
-            anchorEl: null
+            anchorEl: null,
+            searchQuery: ''
         }
     }
     componentWillMount() {
@@ -40,6 +41,18 @@ class Header extends Component {
         this.handleMenuClose();
         await signOut();
     };
+
+    handleSearchChange = (event) => {
+        this.setState({ searchQuery: event.target.value });
+    };
+
+    handleSearchSubmit = (event) => {
+        event.preventDefault();
+        const { searchQuery } = this.state;
+        if (searchQuery.trim()) {
+            window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
+        }
+    };
     render() {
         const { width } = this.state;
         const isMobile = width <= 800;
@@ -64,9 +77,17 @@ class Header extends Component {
                                 </Grid>
                                 <Grid item md={6} lg={7} xl={6}>
                                     <div className="search-form">
-                                        <form action="#" method="post">
-                                            <input type="text" name="search" placeholder="Search for Products..." />
-                                            <button className="btn search__btn"><i className="fa fa-search" aria-hidden="true"></i></button>
+                                        <form onSubmit={this.handleSearchSubmit}>
+                                            <input
+                                                type="text"
+                                                name="search"
+                                                placeholder="Search for Products..."
+                                                value={this.state.searchQuery}
+                                                onChange={this.handleSearchChange}
+                                            />
+                                            <button type="submit" className="btn search__btn">
+                                                <i className="fa fa-search" aria-hidden="true"></i>
+                                            </button>
                                         </form>
                                     </div>
                                 </Grid>
