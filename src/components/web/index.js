@@ -26,6 +26,11 @@ import SearchResults from './search-results';
 import Profile from './profile';
 import ChangePassword from './change-password';
 import ProtectedRoute from '../common/ProtectedRoute';
+import AdminRoute from '../common/AdminRoute';
+import AdminDashboard from '../admin/Dashboard';
+import AdminProducts from '../admin/Products';
+import AdminCategories from '../admin/Categories';
+import AdminOrders from '../admin/Orders';
 
 export default class Main extends Component {
   render() {
@@ -35,6 +40,10 @@ export default class Main extends Component {
             <Header />
             <Switch>
               <Route exact path='/' component={Home} />
+              <AdminRoute exact path='/admin' component={AdminDashboard} />
+              <AdminRoute path='/admin/products' component={AdminProducts} />
+              <AdminRoute path='/admin/categories' component={AdminCategories} />
+              <AdminRoute path='/admin/orders' component={AdminOrders} />
               <Route path='/search' component={SearchResults} />
               <Route path='/product/:slug' component={ProductDetail} />
               <Route path='/category/:slug' component={CategoryPage} />
